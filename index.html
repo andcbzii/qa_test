@@ -1,84 +1,491 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Website</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Test Case Tracker</title>
+<style>
+  :root {
+    --pale: #F5D5E0;
+    --slate: #6667AB;
+    --magenta: #7B337E;
+    --deep: #420D4B;
+    --ink: #210635;
+    --accent: #6b296b;
+    --accent-light: #9a4e9a;
+    --pass: #4fd18b;
+    --fail: #ef5f6c;
+    --pending: #e8c667;
+  }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #f7f7f9;
-      color: #1a1a1a;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    header {
-      background: #ffffff;
-      border-bottom: 1px solid #e5e5e8;
-      padding: 1.5rem 2rem;
-    }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: radial-gradient(circle at top, var(--deep) 0%, var(--ink) 65%);
+    background-attachment: fixed;
+    color: var(--pale);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
+  header {
+    padding: 1.75rem 2rem;
+    border-bottom: 1px solid rgba(245, 213, 224, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
 
-    main {
-      flex: 1;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 3rem 2rem;
-      text-align: center;
-    }
+  header .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
 
-    main h2 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
+  header .brand .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
 
-    main p {
-      font-size: 1.1rem;
-      color: #555;
-      line-height: 1.6;
-    }
+  header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
 
-    footer {
-      text-align: center;
-      padding: 1.5rem;
-      font-size: 0.85rem;
-      color: #888;
-    }
-  </style>
+  header p.sub {
+    font-size: 0.85rem;
+    color: var(--slate);
+    margin-top: 0.1rem;
+  }
+
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 3.5rem;
+  }
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .summary .card {
+    background: rgba(66, 13, 75, 0.45);
+    border: 1px solid rgba(123, 51, 126, 0.4);
+    border-radius: 14px;
+    padding: 1.1rem 1.2rem;
+    backdrop-filter: blur(6px);
+  }
+
+  .summary .card .num {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .summary .card .label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--slate);
+    margin-top: 0.2rem;
+  }
+
+  .summary .card.total .num { color: var(--pale); }
+  .summary .card.pass .num { color: var(--pass); }
+  .summary .card.fail .num { color: var(--fail); }
+  .summary .card.pending .num { color: var(--pending); }
+
+  .panel {
+    background: rgba(33, 6, 53, 0.55);
+    border: 1px solid rgba(102, 103, 171, 0.25);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .panel h2 {
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+    color: var(--pale);
+  }
+
+  form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+  }
+
+  form .full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--slate);
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  input[type="text"],
+  textarea,
+  select {
+    width: 100%;
+    background: rgba(106, 41, 107, 0.18);
+    border: 1px solid rgba(123, 51, 126, 0.5);
+    border-radius: 8px;
+    padding: 0.6rem 0.7rem;
+    color: var(--pale);
+    font-size: 0.9rem;
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  input::placeholder, textarea::placeholder { color: rgba(245, 213, 224, 0.35); }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--accent-light);
+    box-shadow: 0 0 0 3px rgba(107, 41, 107, 0.35);
+  }
+
+  select option { background: var(--ink); color: var(--pale); }
+
+  button.primary {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, var(--accent), var(--magenta));
+    color: var(--pale);
+    border: none;
+    border-radius: 9px;
+    padding: 0.75rem 1rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  button.primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(107, 41, 107, 0.45);
+  }
+
+  .filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .filters button {
+    background: rgba(102, 103, 171, 0.15);
+    border: 1px solid rgba(102, 103, 171, 0.35);
+    color: var(--pale);
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .filters button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .cases {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .case {
+    background: rgba(66, 13, 75, 0.35);
+    border: 1px solid rgba(123, 51, 126, 0.3);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.6rem;
+    align-items: start;
+  }
+
+  .case .title {
+    font-weight: 600;
+    font-size: 0.98rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .case .steps, .case .expected {
+    font-size: 0.82rem;
+    color: rgba(245, 213, 224, 0.75);
+    line-height: 1.5;
+  }
+
+  .case .expected { margin-top: 0.3rem; }
+  .case .expected strong { color: var(--slate); }
+
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    height: fit-content;
+  }
+
+  .badge.pass { background: rgba(79, 209, 139, 0.15); color: var(--pass); border: 1px solid rgba(79, 209, 139, 0.4); }
+  .badge.fail { background: rgba(239, 95, 108, 0.15); color: var(--fail); border: 1px solid rgba(239, 95, 108, 0.4); }
+  .badge.pending { background: rgba(232, 198, 103, 0.15); color: var(--pending); border: 1px solid rgba(232, 198, 103, 0.4); }
+
+  .case-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+  }
+
+  .case-actions button {
+    font-size: 0.75rem;
+    background: none;
+    border: 1px solid rgba(245, 213, 224, 0.2);
+    color: var(--slate);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .case-actions button:hover { color: var(--pale); border-color: var(--accent-light); }
+
+  .empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--slate);
+    font-size: 0.9rem;
+  }
+
+  footer {
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--slate);
+  }
+
+  @media (max-width: 560px) {
+    form { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
-  <header>
-    <h1>My Website</h1>
-  </header>
+<header>
+  <div class="brand">
+    <span class="dot"></span>
+    <div>
+      <h1>QA Test Case Tracker</h1>
+      <p class="sub">Track test cases, run status, and results in one place</p>
+    </div>
+  </div>
+</header>
 
-  <main>
-    <h2>Welcome</h2>
-    <p>This is a simple starter page with your chat widget installed. Feel free to customize the content, styling, and layout to fit your needs.</p>
-  </main>
+<main>
+  <section class="summary">
+    <div class="card total">
+      <div class="num" id="countTotal">0</div>
+      <div class="label">Total Cases</div>
+    </div>
+    <div class="card pass">
+      <div class="num" id="countPass">0</div>
+      <div class="label">Passed</div>
+    </div>
+    <div class="card fail">
+      <div class="num" id="countFail">0</div>
+      <div class="label">Failed</div>
+    </div>
+    <div class="card pending">
+      <div class="num" id="countPending">0</div>
+      <div class="label">Pending</div>
+    </div>
+  </section>
 
-  <footer>
-    &copy; 2026 My Website. All rights reserved.
-  </footer>
+  <section class="panel">
+    <h2>New Test Case</h2>
+    <form id="caseForm">
+      <div class="full">
+        <label for="title">Test Title</label>
+        <input type="text" id="title" placeholder="e.g. User can log in with valid credentials" required>
+      </div>
+      <div class="full">
+        <label for="steps">Steps to Reproduce</label>
+        <textarea id="steps" rows="2" placeholder="1. Go to login page&#10;2. Enter credentials&#10;3. Click Login"></textarea>
+      </div>
+      <div class="full">
+        <label for="expected">Expected Result</label>
+        <textarea id="expected" rows="2" placeholder="User is redirected to the dashboard"></textarea>
+      </div>
+      <div>
+        <label for="status">Status</label>
+        <select id="status">
+          <option value="pending">Pending</option>
+          <option value="pass">Pass</option>
+          <option value="fail">Fail</option>
+        </select>
+      </div>
+      <div>
+        <label for="priority">Priority</label>
+        <select id="priority">
+          <option value="Low">Low</option>
+          <option value="Medium" selected>Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+      <button type="submit" class="primary">Add Test Case</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Test Cases</h2>
+    <div class="filters" id="filters">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="pass">Pass</button>
+      <button data-filter="fail">Fail</button>
+      <button data-filter="pending">Pending</button>
+    </div>
+    <div class="cases" id="caseList"></div>
+    <div class="empty" id="emptyState" style="display:none;">No test cases yet. Add your first one above.</div>
+  </section>
+</main>
+
+<footer>
+  &copy; 2026 QA Test Case Tracker. Data is stored locally in your browser.
+</footer>
+
+<script>
+  const STORAGE_KEY = 'qa_test_cases_v1';
+  let cases = [];
+  let currentFilter = 'all';
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      cases = raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      cases = [];
+    }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cases));
+    } catch (e) {}
+  }
+
+  function render() {
+    const list = document.getElementById('caseList');
+    const empty = document.getElementById('emptyState');
+    list.innerHTML = '';
+
+    const filtered = currentFilter === 'all'
+      ? cases
+      : cases.filter(c => c.status === currentFilter);
+
+    if (filtered.length === 0) {
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+    }
+
+    filtered.slice().reverse().forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'case';
+      div.innerHTML = `
+        <div>
+          <div class="title">${escapeHtml(c.title)}</div>
+          ${c.steps ? `<div class="steps">${escapeHtml(c.steps).replace(/\n/g, '<br>')}</div>` : ''}
+          ${c.expected ? `<div class="expected"><strong>Expected:</strong> ${escapeHtml(c.expected)}</div>` : ''}
+        </div>
+        <span class="badge ${c.status}">${c.status}</span>
+        <div class="case-actions">
+          <button onclick="setStatus('${c.id}','pass')">Mark Pass</button>
+          <button onclick="setStatus('${c.id}','fail')">Mark Fail</button>
+          <button onclick="setStatus('${c.id}','pending')">Mark Pending</button>
+          <button onclick="removeCase('${c.id}')">Delete</button>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+
+    document.getElementById('countTotal').textContent = cases.length;
+    document.getElementById('countPass').textContent = cases.filter(c => c.status === 'pass').length;
+    document.getElementById('countFail').textContent = cases.filter(c => c.status === 'fail').length;
+    document.getElementById('countPending').textContent = cases.filter(c => c.status === 'pending').length;
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function setStatus(id, status) {
+    const c = cases.find(c => c.id === id);
+    if (c) { c.status = status; save(); render(); }
+  }
+
+  function removeCase(id) {
+    cases = cases.filter(c => c.id !== id);
+    save();
+    render();
+  }
+
+  document.getElementById('caseForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const title = document.getElementById('title').value.trim();
+    if (!title) return;
+    cases.push({
+      id: 'tc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+      title,
+      steps: document.getElementById('steps').value.trim(),
+      expected: document.getElementById('expected').value.trim(),
+      status: document.getElementById('status').value,
+      priority: document.getElementById('priority').value
+    });
+    save();
+    this.reset();
+    document.getElementById('status').value = 'pending';
+    document.getElementById('priority').value = 'Medium';
+    render();
+  });
+
+  document.getElementById('filters').addEventListener('click', function(e) {
+    if (e.target.tagName !== 'BUTTON') return;
+    document.querySelectorAll('#filters button').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    currentFilter = e.target.dataset.filter;
+    render();
+  });
+
+  load();
+  render();
+</script>
 
 <!-- Chat BEGIN -->
             <script>var APNW={s:{"id":"VlFKVA8ECmM","src":"https:\/\/s022-079.apntelecom.co"}};
             (function(d,e,s){if(d.getElementById("apn-w"))return;a=d.createElement(e);m=d.getElementsByTagName(e)[0];a.async=1;a.id="apn-w";a.src=s;m.parentNode.insertBefore(a,m)})
             (document,"script","https://s022-079.apntelecom.co/chat/js/widget.js?v=b678ee09");</script>
         <!-- END -->
- 
 
 </body>
 </html>
